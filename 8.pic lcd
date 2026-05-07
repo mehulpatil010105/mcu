@@ -1,64 +1,88 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <PIC18F4550.h>
+#include <pic18f4550.h>
+
+#define RS LATCbits.LATC0
+#define E  LATCbits.LATC1
+
+#define LCDPORT LATB
 
 void delay()
 {
-    unsigned int j;
-
-    for(j = 0; j < 30000; j++)
+    for(int i = 0; i < 30000; i++)
     {
     }
 }
 
+void sendcommand(unsigned char command)
+{
+    LCDPORT = command;
+
+    RS = 0;
+
+    delay();
+
+    E = 1;
+
+    delay();
+
+    E = 0;
+
+    delay();
+}
+
+void sendData(unsigned char data)
+{
+    LCDPORT = data;
+
+    RS = 1;
+
+    delay();
+
+    E = 1;
+
+    delay();
+
+    E = 0;
+
+    delay();
+}
+
 void main()
 {
-    unsigned int key, i;
-
-    key = 0;
-
     TRISB = 0x00;
-    TRISDbits.RD2 = 0;
-    TRISAbits.RA4 = 0;
-    TRISDbits.RD0 = 1;
-    TRISDbits.RD1 = 1;
 
-    while(1)
-    {
-        if(PORTDbits.RD0 == 0)
-        {
-            key = 0;
-        }
+    TRISCbits.RC0 = 0;
 
-        if(PORTDbits.RD1 == 0)
-        {
-            key = 1;
-        }
+    TRISCbits.RC1 = 0;
 
-        if(key == 0)
-        {
-            LATDbits.LATD2 = 0;
-            LATAbits.LATA4 = 0;
+    sendcommand(0x38);
 
-            for(i = 0; i < 8; i++)
-            {
-                LATB = 0x01 << i;
+    sendcommand(0x0C);
 
-                delay();
-            }
-        }
+    sendcommand(0x01);
 
-        if(key == 1)
-        {
-            LATDbits.LATD2 = 1;
-            LATAbits.LATA4 = 1;
+    sendcommand(0x06);
 
-            for(i = 0; i < 8; i++)
-            {
-                LATB = 0x80 >> i;
+    sendcommand(0x80);
 
-                delay();
-            }
-        }
-    }
+    sendData('V');
+    sendData('A');
+    sendData('T');
+    sendData('S');
+    sendData('H');
+    sendData('N');
+    sendData('A');
+    sendData('V');
+    sendData('I');
+
+    sendcommand(0xC0);
+
+    sendData('3');
+    sendData('0');
+    sendData('4');
+    sendData('B');
+    sendData('0');
+    sendData('3');
+    sendData('8');
 }
