@@ -1,0 +1,31 @@
+#include <reg51.h>
+
+#define Del 1000
+
+void delay(unsigned int time)
+{
+    unsigned int i, j;
+
+    for(i = 0; i < time; i++)
+        for(j = 0; j < 2000; j++);
+}
+
+void main(void)
+{
+    unsigned char count[10] =
+    {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09};
+
+    unsigned int x;
+
+    P1 = 0x00;
+
+    while(1)
+    {
+        for(x = 0; x < 10; x++)
+        {
+            P1 = count[x];
+
+            delay(1000);
+        }
+    }
+}
